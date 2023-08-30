@@ -26,9 +26,18 @@
   padding: 10px 15px;
 }
 
-.calendar-button {
+.calendar-button-container {
   padding: 10px 15px;
   display: inline-block;
+}
+
+.calendar-button-container button {
+  padding: 2px 5px;
+}
+
+.calendar-icon {
+  font-size: 18px;
+  color: rgb(10, 99, 172);
 }
 
 .selected-dates {
@@ -80,6 +89,9 @@
 
 .clear-date-ranges button {
   background-color: rgb(10, 99, 172); /* Change background color on hover */
+  border: 1px solid #b0cde7;
+  font-size: 16px;
+  padding: 6px 40px;
 }
 
 .clear-date-ranges button:hover {
