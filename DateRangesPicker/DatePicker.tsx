@@ -1,6 +1,5 @@
 import * as React from "react";
 
-import { Field, makeStyles } from "@fluentui/react-components";
 import {
   DateRange,
   DayClickEventHandler,
@@ -34,12 +33,6 @@ const css = `
   }
 `;
 
-const useStyles = makeStyles({
-  control: {
-    maxWidth: "300px",
-  },
-});
-
 export const DatePicker: React.FC<IDateRangePickerProps> = ({
   label,
   selected,
@@ -47,7 +40,6 @@ export const DatePicker: React.FC<IDateRangePickerProps> = ({
   selectedDateRanges,
   resetSelected,
 }) => {
-  const styles = useStyles();
   const [error, setError] = React.useState<any>(undefined);
   const today: Date = new Date();
   const minDate: Date = addMonths(today, -12);
@@ -112,10 +104,8 @@ export const DatePicker: React.FC<IDateRangePickerProps> = ({
   return (
     <>
       <style>{css}</style>
-      <Field
-        required
-        label={`Select ${label}. Range: ${minDate.toDateString()} - ${maxDate.toDateString()}`}
-      >
+      <div>
+        <p>{`Select ${label}. Range: ${minDate.toDateString()} - ${maxDate.toDateString()}`}</p>
         <DayPicker
           captionLayout="dropdown-buttons"
           mode="range"
@@ -141,7 +131,7 @@ export const DatePicker: React.FC<IDateRangePickerProps> = ({
           onDayClick={handleDayClick}
           footer={footer}
         />
-      </Field>
+      </div>
     </>
   );
 };

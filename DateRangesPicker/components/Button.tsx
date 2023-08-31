@@ -33,7 +33,7 @@ const Button: React.FC<IButtonProps> = ({
   ...props
 }) => {
   return (
-    <StyledButton className={buttonClassName} {...props}>
+    <StyledButton className={buttonClassName} type="button" {...props}>
       {icon && <Icon className={iconClassName}>{icon}</Icon>}
       {children}
     </StyledButton>

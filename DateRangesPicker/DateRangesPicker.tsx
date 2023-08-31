@@ -1,18 +1,9 @@
 import * as React from "react";
-import {
-  Subtitle1,
-  Popover,
-  PopoverTrigger,
-  PopoverSurface,
-  PositioningProps,
-  Tooltip,
-  FluentProvider,
-  teamsDarkTheme,
-} from "@fluentui/react-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendar } from "@fortawesome/free-solid-svg-icons";
 import { DatePicker } from "./DatePicker";
 import { DateRange } from "react-day-picker";
+import { Popover } from "react-tiny-popover";
 import { useSelectedDateRanges } from "./util/date";
 import "react-day-picker/dist/style.css";
 import Button from "./components/Button";
@@ -27,7 +18,7 @@ const DateRangesPicker: React.FC<IDateRangePickerProps> = (
   // const first = mergeClasses(classes.red, classes.rootPrimary);
   const { targetDocument } = props;
   const [selected, setSelected] = React.useState<DateRange>();
-
+  const [isPopoverOpen, setIsPopoverOpen] = React.useState(false);
   // Callback to reset the selected date range in the parent state
   const handleResetSelected = () => {
     setSelected(undefined);
@@ -56,52 +47,44 @@ const DateRangesPicker: React.FC<IDateRangePickerProps> = (
     // TODO: Save 'serializedSelectedDateRanges' to the Power Apps column using Power Apps connector or API call.
   };
 
-  const offset: PositioningProps["offset"] = ({ positionedRect }) => {
-    return { crossAxis: 100, mainAxis: positionedRect.width / 6 };
-  };
-
   return (
     <div className={"pcf-container"}>
-      <FluentProvider theme={teamsDarkTheme} className={".fluent-provider"}>
+      <div className={"pcf-content"}>
         <div className={"popover"}>
-          <Subtitle1 className={"label"}>Enter Term Breaks</Subtitle1>
-          <Popover positioning={{ position: "after", offset }}>
-            <PopoverTrigger disableButtonEnhancement>
-              {/* <Button appearance="primary">Click me</Button> */}
-              <Tooltip
-                withArrow
-                content={{
-                  children: "Enter class dates",
-                  // className: classes.tooltip,
-                }}
-                relationship="label"
-              >
-                <div className={"calendar-button-container"}>
-                  <Button
-                    buttonClassName="calendar-button"
-                    icon={<FontAwesomeIcon icon={faCalendar} />}
-                    iconClassName="calendar-icon"
-                  />
-                </div>
-              </Tooltip>
-            </PopoverTrigger>
-
-            <PopoverSurface style={{ minWidth: 80, top: 50 }}>
-              <DatePicker
-                label="Term Breaks"
-                selected={selected}
-                setSelected={setSelected}
-                selectedDateRanges={selectedDateRanges}
-                resetSelected={handleResetSelected} // Pass the resetSelected callback to the child
+          <div className={"label"}>Enter Term Breaks</div>
+          <Popover
+            isOpen={isPopoverOpen}
+            positions={["right", "bottom", "top", "left"]} // preferred positions by priority
+            content={
+              <>
+                <DatePicker
+                  label="Term Breaks"
+                  selected={selected}
+                  setSelected={setSelected}
+                  selectedDateRanges={selectedDateRanges}
+                  resetSelected={handleResetSelected} // Pass the resetSelected callback to the child
+                />
+                <Button
+                  onClick={handleConfirmSelectedDates}
+                  buttonClassName="add-selected-btn"
+                >
+                  Add Selected Dates
+                </Button>
+              </>
+            }
+          >
+            <div className={"calendar-button-container"}>
+              <Button
+                title="calendar-button"
+                onClick={() => setIsPopoverOpen(!isPopoverOpen)}
+                buttonClassName="calendar-button"
+                icon={<FontAwesomeIcon icon={faCalendar} />}
+                iconClassName="calendar-icon"
               />
-              {/* Button to confirm and add the selected dates to the list */}
-              <Button onClick={handleConfirmSelectedDates}>
-                Add Selected Dates
-              </Button>
-            </PopoverSurface>
+            </div>
           </Popover>
         </div>
-        {/* Display the selected date range */}
+
         <div className={"selected-dates"}>
           <p className={"selected-dates-label"}>Selected Date Ranges:</p>
           <div className="date-list-wrapper">
@@ -117,13 +100,16 @@ const DateRangesPicker: React.FC<IDateRangePickerProps> = (
                 ))}
               </ul>
             </div>
+
             {/* TODO: Add clear button to clear date ranges */}
+            {/* <div style={{ color: "white", backgroundColor: "#ccc" }}> */}
+
             <div className={"clear-date-ranges"}>
               <Button onClick={handleClearSelectedDateRanges}>Clear</Button>
             </div>
           </div>
         </div>
-      </FluentProvider>
+      </div>
     </div>
   );
 };
