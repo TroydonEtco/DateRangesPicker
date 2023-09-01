@@ -26,6 +26,7 @@ export class DateRangesPicker
     state: ComponentFramework.Dictionary
   ): void {
     this.notifyOutputChanged = notifyOutputChanged;
+    // TODO: We can make remote server calls here, look into making calls to get current date ranges selected.
   }
 
   /**
@@ -38,6 +39,7 @@ export class DateRangesPicker
   ): React.ReactElement {
     const props: IDateRangePickerProps = {
       targetDocument: undefined,
+      dateRanges: "",
     };
 
     const dateRangesPicker = React.createElement(DateRangePicker, props);

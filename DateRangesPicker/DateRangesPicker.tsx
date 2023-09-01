@@ -9,6 +9,7 @@ import "react-day-picker/dist/style.css";
 import Button from "./components/Button";
 export interface IDateRangePickerProps {
   targetDocument: any;
+  dateRanges: String;
 }
 
 const DateRangesPicker: React.FC<IDateRangePickerProps> = (
@@ -55,6 +56,7 @@ const DateRangesPicker: React.FC<IDateRangePickerProps> = (
           <Popover
             isOpen={isPopoverOpen}
             positions={["right", "bottom", "top", "left"]} // preferred positions by priority
+            onClickOutside={() => setIsPopoverOpen(!isPopoverOpen)}
             content={
               <>
                 <DatePicker
@@ -69,6 +71,9 @@ const DateRangesPicker: React.FC<IDateRangePickerProps> = (
                   buttonClassName="add-selected-btn"
                 >
                   Add Selected Dates
+                </Button>
+                <Button onClick={() => setIsPopoverOpen(!isPopoverOpen)}>
+                  Close
                 </Button>
               </>
             }
