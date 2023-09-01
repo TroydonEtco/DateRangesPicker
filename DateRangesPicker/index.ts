@@ -7,7 +7,11 @@ export class DateRangesPicker
 {
   private theComponent: ComponentFramework.ReactControl<IInputs, IOutputs>;
   private notifyOutputChanged: () => void;
-
+  private theContainer: HTMLDivElement;
+  private props: IDateRangePickerProps = {
+    targetDocument: undefined,
+    dateRangesChanged: this.selectedDateRangesChanged.bind(this),
+  };
   /**
    * Empty constructor.
    */
@@ -23,10 +27,27 @@ export class DateRangesPicker
   public init(
     context: ComponentFramework.Context<IInputs>,
     notifyOutputChanged: () => void,
-    state: ComponentFramework.Dictionary
+    state: ComponentFramework.Dictionary,
+    container: HTMLDivElement
   ): void {
     this.notifyOutputChanged = notifyOutputChanged;
     // TODO: We can make remote server calls here, look into making calls to get current date ranges selected.
+    this.props.dateRanges =
+      context.parameters.dateRanges.raw ||
+      // TODO: initialize with sample date range data for testing, remove later and initialize from dataverse column
+      JSON.stringify([
+        {
+          from: "2023-08-31T12:00:00.000Z",
+          to: "2023-09-06T12:00:00.000Z",
+        },
+        {
+          from: "2023-09-07T12:00:00.000Z",
+          to: "2023-09-15T12:00:00.000Z",
+        },
+      ]);
+    context.parameters.dateRanges.raw = this.props.dateRanges;
+
+    this.theContainer = container;
   }
 
   /**
@@ -37,12 +58,11 @@ export class DateRangesPicker
   public updateView(
     context: ComponentFramework.Context<IInputs>
   ): React.ReactElement {
-    const props: IDateRangePickerProps = {
-      targetDocument: undefined,
-      dateRanges: "",
-    };
+    this.props.dateRanges = context.parameters.dateRanges.raw || "[]";
+    this.notifyOutputChanged();
 
-    const dateRangesPicker = React.createElement(DateRangePicker, props);
+    const dateRangesPicker = React.createElement(DateRangePicker, this.props);
+    //dateRangesPicker.props.dateRanges
     // Apply styles to a container element
     const containerStyle: React.CSSProperties = {
       backgroundColor: "#b0cde7",
@@ -66,12 +86,21 @@ export class DateRangesPicker
     return containerElement;
   }
 
+  private selectedDateRangesChanged(newValue: string) {
+    if (this.props.dateRanges !== newValue) {
+      this.props.dateRanges = newValue;
+      this.notifyOutputChanged();
+    }
+  }
+
   /**
    * It is called by the framework prior to a control receiving new data.
    * @returns an object based on nomenclature defined in manifest, expecting object[s] for property marked as “bound” or “output”
    */
   public getOutputs(): IOutputs {
-    return {};
+    return {
+      dateRanges: this.props.dateRanges,
+    };
   }
 
   /**

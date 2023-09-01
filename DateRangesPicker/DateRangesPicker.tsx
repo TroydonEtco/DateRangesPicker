@@ -9,7 +9,8 @@ import "react-day-picker/dist/style.css";
 import Button from "./components/Button";
 export interface IDateRangePickerProps {
   targetDocument: any;
-  dateRanges: String;
+  dateRanges?: string | undefined;
+  dateRangesChanged?: (newValue: string) => void;
 }
 
 const DateRangesPicker: React.FC<IDateRangePickerProps> = (
@@ -17,7 +18,7 @@ const DateRangesPicker: React.FC<IDateRangePickerProps> = (
 ): JSX.Element => {
   // const classes = useStyles();
   // const first = mergeClasses(classes.red, classes.rootPrimary);
-  const { targetDocument } = props;
+  const { targetDocument, dateRanges } = props;
   const [selected, setSelected] = React.useState<DateRange>();
   const [isPopoverOpen, setIsPopoverOpen] = React.useState(false);
   // Callback to reset the selected date range in the parent state
@@ -32,7 +33,7 @@ const DateRangesPicker: React.FC<IDateRangePickerProps> = (
     selectedDateRanges,
     handleAddSelectedDateRange,
     handleClearSelectedDateRanges,
-  } = useSelectedDateRanges();
+  } = useSelectedDateRanges(props.dateRanges);
 
   // ... existing code ...
 
@@ -99,8 +100,14 @@ const DateRangesPicker: React.FC<IDateRangePickerProps> = (
               <ul className={"date-list"}>
                 {selectedDateRanges?.map((dateRange, index) => (
                   <li key={index}>
-                    From: {dateRange.from?.toLocaleDateString()} - To:{" "}
-                    {dateRange.to?.toLocaleDateString()}
+                    From:{" "}
+                    {dateRange.from
+                      ? new Date(dateRange.from).toLocaleDateString()
+                      : ""}{" "}
+                    - To: From:{" "}
+                    {dateRange.to
+                      ? new Date(dateRange.to).toLocaleDateString()
+                      : ""}
                   </li>
                 ))}
               </ul>

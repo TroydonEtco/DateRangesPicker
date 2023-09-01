@@ -15,14 +15,11 @@ export function isLeapYear() {
 }
 
 // Custom hook to handle selected date ranges
-export const useSelectedDateRanges = () => {
-  // const [selectedDateRanges, setSelectedDateRanges] = React.useState<
-  //   DateRange[] | undefined
-  // >(undefined);
-
+export const useSelectedDateRanges = (dateRanges: string | undefined) => {
+  const deserializedDateRanges: DateRange[] = JSON.parse(dateRanges || "");
   const [selectedDateRanges, setSelectedDateRanges] = React.useState<
     DateRange[] | undefined
-  >([]);
+  >(deserializedDateRanges || []);
 
   // Function to add a selected date range to the list
   const handleAddSelectedDateRange = (dateRange: DateRange | undefined) => {
