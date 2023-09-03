@@ -7,11 +7,16 @@ import { Popover } from "react-tiny-popover";
 import { useSelectedDateRanges } from "./util/date";
 import "react-day-picker/dist/style.css";
 import Button from "./components/Button";
+
 export interface IDateRangePickerProps {
   targetDocument: any;
   dateRanges?: string | undefined;
-  dateRangesChanged?: (newValue: string) => void;
+  dateRangesChanged?: (newValue: string | undefined) => void;
 }
+
+export interface IDateRangePickerState
+  extends React.ComponentState,
+    IDateRangePickerProps {}
 
 const DateRangesPicker: React.FC<IDateRangePickerProps> = (
   props
@@ -41,6 +46,18 @@ const DateRangesPicker: React.FC<IDateRangePickerProps> = (
   const handleConfirmSelectedDates = () => {
     handleAddSelectedDateRange(selected);
     setSelected(undefined);
+    if (props.dateRangesChanged) {
+      props.dateRangesChanged(
+        JSON.stringify([...(selectedDateRanges || []), selected])
+      );
+    }
+  };
+
+  const handleResetSelectedDates = () => {
+    handleClearSelectedDateRanges();
+    if (props.dateRangesChanged) {
+      props.dateRangesChanged(JSON.stringify([]));
+    }
   };
 
   // Serialize the generatedDateList and save it to Power Apps column when the form is submitted
@@ -117,7 +134,7 @@ const DateRangesPicker: React.FC<IDateRangePickerProps> = (
             {/* <div style={{ color: "white", backgroundColor: "#ccc" }}> */}
 
             <div className={"clear-date-ranges"}>
-              <Button onClick={handleClearSelectedDateRanges}>Clear</Button>
+              <Button onClick={handleResetSelectedDates}>Clear</Button>
             </div>
           </div>
         </div>

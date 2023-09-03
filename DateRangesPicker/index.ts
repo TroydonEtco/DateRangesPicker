@@ -45,8 +45,7 @@ export class DateRangesPicker
           to: "2023-09-15T12:00:00.000Z",
         },
       ]);
-    context.parameters.dateRanges.raw = this.props.dateRanges;
-
+    //context.parameters.dateRanges.raw = this.props.dateRanges;
     this.theContainer = container;
   }
 
@@ -58,8 +57,8 @@ export class DateRangesPicker
   public updateView(
     context: ComponentFramework.Context<IInputs>
   ): React.ReactElement {
-    this.props.dateRanges = context.parameters.dateRanges.raw || "[]";
-    this.notifyOutputChanged();
+    // this.props.dateRanges = context.parameters.dateRanges.raw || "[]";
+    // this.notifyOutputChanged();
 
     const dateRangesPicker = React.createElement(DateRangePicker, this.props);
     //dateRangesPicker.props.dateRanges
@@ -86,7 +85,7 @@ export class DateRangesPicker
     return containerElement;
   }
 
-  private selectedDateRangesChanged(newValue: string) {
+  private selectedDateRangesChanged(newValue: string | undefined) {
     if (this.props.dateRanges !== newValue) {
       this.props.dateRanges = newValue;
       this.notifyOutputChanged();
