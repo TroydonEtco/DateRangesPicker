@@ -41,11 +41,8 @@ export class DateRangesPicker
   ): void {
     this.notifyOutputChanged = notifyOutputChanged;
     this._context = context;
+    this.props.dateRanges = context.parameters.dateRanges.raw || "[]";
 
-    let dateRangesVal = this.retrieveDataverseData(false);
-
-    // TODO: We can make remote server calls here, look into making calls to get current date ranges selected.
-    this.props.dateRanges = context.parameters.dateRanges.raw || dateRangesVal;
     // TODO: initialize with sample date range data for testing, remove later and initialize from dataverse column
     // JSON.stringify([
     //   {
@@ -69,6 +66,18 @@ export class DateRangesPicker
   public updateView(
     context: ComponentFramework.Context<IInputs>
   ): React.ReactElement {
+    this._context.mode.trackContainerResize(true); // Enable container resizing tracking
+
+    this.retrieveDataverseData(false).then((dateRangesVal) => {
+      // After the asynchronous operation is complete, set the value
+      this.props.dateRanges =
+        context.parameters.dateRanges.raw || dateRangesVal;
+      this._context.mode.setControlState({ dateRanges: this.props.dateRanges });
+
+      // Call notifyOutputChanged to update the PCF output
+      this.notifyOutputChanged();
+    });
+
     const dateRangesPicker = React.createElement(DateRangePicker, this.props);
     // Apply styles to a container element
     const containerStyle: React.CSSProperties = {
@@ -90,6 +99,7 @@ export class DateRangesPicker
       { style: containerStyle },
       dateRangesPicker
     );
+
     return containerElement;
   }
 
@@ -100,9 +110,11 @@ export class DateRangesPicker
     }
   }
 
-  private retrieveDataverseData(retrieveMultiple: boolean): string {
+  private async retrieveDataverseData(
+    retrieveMultiple: boolean
+  ): Promise<string | undefined> {
     if (retrieveMultiple) {
-      fetchDataverseDataMultiple(
+      return await fetchDataverseDataMultiple(
         this._context,
         DateRangesPicker._entityName,
         DateRangesPicker._requiredAttributeName,
@@ -111,7 +123,7 @@ export class DateRangesPicker
         DateRangesPicker._dateRangesAttributeName
       );
     } else {
-      fetchDataverseDataSingle(
+      return await fetchDataverseDataSingle(
         this._context,
         DateRangesPicker._entityName,
         DateRangesPicker._requiredAttributeName,
@@ -120,7 +132,6 @@ export class DateRangesPicker
         DateRangesPicker._dateRangesAttributeName
       );
     }
-    return "[]";
   }
 
   /**

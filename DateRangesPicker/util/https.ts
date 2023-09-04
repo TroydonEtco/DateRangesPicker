@@ -9,21 +9,21 @@ export async function fetchDataverseDataSingle(
   requestedAttrName: string
 ): Promise<string | undefined> {
   // Construct the URL for the Dataverse Web API request
-  const queryString = `?$select=${requestedAttrName}&$filter=contains(${requiredAttributeName},'${requiredAttributeValue}')`;
+  // const queryString = `?$select=${requestedAttrName}&$filter=contains(${requiredAttributeName},'${requiredAttributeValue}')`;
 
   // Make the GET request to retrieve data
   try {
     // Invoke the Web API Retrieve Single call
-    if (queryString) {
-      const response = await context.webAPI.retrieveRecord(
-        entityName,
-        queryString
-      );
+    //if (queryString) {
+    const response = await context.webAPI.retrieveRecord(
+      entityName,
+      requiredAttributeValue
+    );
 
-      // Process the retrieved data
-      const value: string = response[requestedAttrName];
-      return value;
-    }
+    // Process the retrieved data
+    const value: string = response[requestedAttrName];
+    return value ?? "[]";
+    // }
 
     // Process the retrieved data as needed
   } catch (error) {
@@ -46,6 +46,7 @@ export async function fetchDataverseDataMultiple(
     // Invoke the Web API Retrieve Single call
     const response = await context.webAPI.retrieveRecord(
       entityName,
+      requiredAttributeValue,
       queryString
     );
 
@@ -56,7 +57,7 @@ export async function fetchDataverseDataMultiple(
     }
 
     // Process the retrieved data
-    return value;
+    return value ?? "[]";
 
     // Process the retrieved data as needed
   } catch (error) {
