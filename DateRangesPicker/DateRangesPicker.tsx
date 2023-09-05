@@ -12,35 +12,53 @@ export interface IDateRangePickerProps {
   targetDocument: any;
   dateRanges?: string | undefined;
   dateRangesChanged?: (newValue: string | undefined) => void;
+  requestData?: (newValue: boolean) => Promise<string | undefined>;
 }
 
 export interface IDateRangePickerState
   extends React.ComponentState,
     IDateRangePickerProps {}
 
-const DateRangesPicker: React.FC<IDateRangePickerProps> = (
+const DateRangePicker: React.FC<IDateRangePickerProps> = (
   props
 ): JSX.Element => {
-  // const classes = useStyles();
-  // const first = mergeClasses(classes.red, classes.rootPrimary);
-  const { targetDocument, dateRanges } = props;
   const [selected, setSelected] = React.useState<DateRange>();
   const [isPopoverOpen, setIsPopoverOpen] = React.useState(false);
+  const [dataFetched, setDataFetched] = React.useState(false);
+
   // Callback to reset the selected date range in the parent state
   const handleResetSelected = () => {
     setSelected(undefined);
   };
 
-  // TODO: Serialize the selected date range to string, and save it to dataverse by attached a js event handler to this custom code component
-  // Helper function to generate a user-friendly list of dates
   // Custom hook for selected date ranges
   const {
     selectedDateRanges,
     handleAddSelectedDateRange,
     handleClearSelectedDateRanges,
+    handleSetSelectedDateRange,
   } = useSelectedDateRanges(props.dateRanges);
 
-  // ... existing code ...
+  // try to initialize with requested data
+  React.useEffect(() => {
+    if (
+      !dataFetched &&
+      (!selectedDateRanges || selectedDateRanges.length < 1)
+    ) {
+      // Fetch data because selectedDateRanges is empty or has fewer than 1 elements
+      if (props.requestData) {
+        props.requestData(false).then((newDateRangeData) => {
+          if (props.dateRangesChanged) {
+            props.dateRangesChanged(newDateRangeData);
+            if (newDateRangeData) {
+              handleSetSelectedDateRange(newDateRangeData);
+              setDataFetched(true); // Mark data as fetched
+            }
+          }
+        });
+      }
+    }
+  }, [props.dateRanges]);
 
   // Callback to add the selected date range to the list
   const handleConfirmSelectedDates = () => {
@@ -121,7 +139,7 @@ const DateRangesPicker: React.FC<IDateRangePickerProps> = (
                     {dateRange.from
                       ? new Date(dateRange.from).toLocaleDateString()
                       : ""}{" "}
-                    - To: From:{" "}
+                    - To:{" "}
                     {dateRange.to
                       ? new Date(dateRange.to).toLocaleDateString()
                       : ""}
@@ -129,10 +147,6 @@ const DateRangesPicker: React.FC<IDateRangePickerProps> = (
                 ))}
               </ul>
             </div>
-
-            {/* TODO: Add clear button to clear date ranges */}
-            {/* <div style={{ color: "white", backgroundColor: "#ccc" }}> */}
-
             <div className={"clear-date-ranges"}>
               <Button onClick={handleResetSelectedDates}>Clear</Button>
             </div>
@@ -143,4 +157,4 @@ const DateRangesPicker: React.FC<IDateRangePickerProps> = (
   );
 };
 
-export default DateRangesPicker;
+export default DateRangePicker;

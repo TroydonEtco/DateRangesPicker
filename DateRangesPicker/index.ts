@@ -4,6 +4,7 @@ import * as React from "react";
 import {
   fetchDataverseDataMultiple,
   fetchDataverseDataSingle,
+  getDummyDateRanges,
 } from "./util/https";
 
 export class DateRangesPicker
@@ -12,9 +13,11 @@ export class DateRangesPicker
   private _context: ComponentFramework.Context<IInputs>;
   private notifyOutputChanged: () => void;
   private theContainer: HTMLDivElement;
-  private props: IDateRangePickerProps = {
+  public props: IDateRangePickerProps = {
     targetDocument: undefined,
     dateRangesChanged: this.selectedDateRangesChanged.bind(this),
+    // requestData: this.retrieveDummyDateRanges.bind(this), // UNCOMMENT when using test data
+    requestData: this.retrieveDataverseData.bind(this),
   };
 
   private static _entityName = "new_eventseries";
@@ -41,21 +44,7 @@ export class DateRangesPicker
   ): void {
     this.notifyOutputChanged = notifyOutputChanged;
     this._context = context;
-    this.props.dateRanges = context.parameters.dateRanges.raw || "[]";
-
-    // TODO: initialize with sample date range data for testing, remove later and initialize from dataverse column
-    // JSON.stringify([
-    //   {
-    //     from: "2023-08-31T12:00:00.000Z",
-    //     to: "2023-09-06T12:00:00.000Z",
-    //   },
-    //   {
-    //     from: "2023-09-07T12:00:00.000Z",
-    //     to: "2023-09-15T12:00:00.000Z",
-    //   },
-    // ]);
-    //context.parameters.dateRanges.raw = this.props.dateRanges;
-    this.theContainer = container;
+    this.props.dateRanges = "[]";
   }
 
   /**
@@ -66,20 +55,8 @@ export class DateRangesPicker
   public updateView(
     context: ComponentFramework.Context<IInputs>
   ): React.ReactElement {
-    this._context.mode.trackContainerResize(true); // Enable container resizing tracking
-
-    this.retrieveDataverseData(false).then((dateRangesVal) => {
-      // After the asynchronous operation is complete, set the value
-      this.props.dateRanges =
-        context.parameters.dateRanges.raw || dateRangesVal;
-      this._context.mode.setControlState({ dateRanges: this.props.dateRanges });
-
-      // Call notifyOutputChanged to update the PCF output
-      this.notifyOutputChanged();
-    });
-
-    const dateRangesPicker = React.createElement(DateRangePicker, this.props);
-    // Apply styles to a container element
+    // Initialize a variable to store the container element
+    let containerElement: React.ReactElement | null = null;
     const containerStyle: React.CSSProperties = {
       backgroundColor: "#b0cde7",
       padding: "1px",
@@ -88,13 +65,12 @@ export class DateRangesPicker
       width: 400,
       height: 300,
       display: "flex",
-      // flexDirection: "column",
       justifyContent: "center",
       alignItems: "center",
     };
 
-    // Create the container element with styles and children
-    const containerElement = React.createElement(
+    const dateRangesPicker = React.createElement(DateRangePicker, this.props);
+    containerElement = React.createElement(
       "div",
       { style: containerStyle },
       dateRangesPicker
@@ -108,6 +84,11 @@ export class DateRangesPicker
       this.props.dateRanges = newValue;
       this.notifyOutputChanged();
     }
+  }
+
+  private async retrieveDummyDateRanges(): Promise<string | undefined> {
+    let dummyData = await getDummyDateRanges();
+    return dummyData;
   }
 
   private async retrieveDataverseData(

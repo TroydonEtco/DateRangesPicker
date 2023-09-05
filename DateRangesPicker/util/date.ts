@@ -29,6 +29,11 @@ export const useSelectedDateRanges = (dateRanges: string | undefined) => {
     ]);
   };
 
+  const handleSetSelectedDateRange = (dateRanges: string | undefined) => {
+    const deserializedDateRanges: DateRange[] = JSON.parse(dateRanges || "");
+    setSelectedDateRanges(deserializedDateRanges);
+  };
+
   // Function to clear all selected date ranges
   const handleClearSelectedDateRanges = () => {
     setSelectedDateRanges([]);
@@ -38,5 +43,6 @@ export const useSelectedDateRanges = (dateRanges: string | undefined) => {
     selectedDateRanges,
     handleAddSelectedDateRange,
     handleClearSelectedDateRanges,
+    handleSetSelectedDateRange,
   };
 };

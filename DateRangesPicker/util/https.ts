@@ -1,5 +1,9 @@
 import { IInputs } from "../generated/ManifestTypes";
 
+export async function getDummyDateRanges(): Promise<string | undefined> {
+  return '[{"from":"2023-08-31T12:00:00.000Z","to":"2023-09-06T12:00:00.000Z"},{"from":"2023-09-07T12:00:00.000Z","to":"2023-09-15T12:00:00.000Z"}]';
+}
+
 // Function to fetch Dataverse data
 export async function fetchDataverseDataSingle(
   context: ComponentFramework.Context<IInputs>,
