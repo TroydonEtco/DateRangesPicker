@@ -12,13 +12,9 @@ export async function fetchDataverseDataSingle(
   requiredAttributeValue: string,
   requestedAttrName: string
 ): Promise<string | undefined> {
-  // Construct the URL for the Dataverse Web API request
-  // const queryString = `?$select=${requestedAttrName}&$filter=contains(${requiredAttributeName},'${requiredAttributeValue}')`;
-
   // Make the GET request to retrieve data
   try {
     // Invoke the Web API Retrieve Single call
-    //if (queryString) {
     const response = await context.webAPI.retrieveRecord(
       entityName,
       requiredAttributeValue
@@ -27,7 +23,6 @@ export async function fetchDataverseDataSingle(
     // Process the retrieved data
     const value: string = response[requestedAttrName];
     return value ?? "[]";
-    // }
 
     // Process the retrieved data as needed
   } catch (error) {
@@ -64,6 +59,32 @@ export async function fetchDataverseDataMultiple(
     return value ?? "[]";
 
     // Process the retrieved data as needed
+  } catch (error) {
+    console.error("Fetch error:", error);
+  }
+}
+
+export async function saveDataVerseData(
+  context: ComponentFramework.Context<IInputs>,
+  entityName: string,
+  requiredAttributeName: string,
+  requiredAttributeValue: string,
+  requestedAttrName: string,
+  requestedAttrValue: string
+): Promise<string | undefined> {
+  // Make the PUT request to update data
+  try {
+    const data: ComponentFramework.WebApi.Entity = {};
+    data[requestedAttrName] = requestedAttrValue;
+
+    const response = await context.webAPI.updateRecord(
+      entityName,
+      requiredAttributeValue,
+      data
+    );
+
+    const value: string = response.id;
+    return value;
   } catch (error) {
     console.error("Fetch error:", error);
   }
