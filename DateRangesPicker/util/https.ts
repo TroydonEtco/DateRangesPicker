@@ -20,11 +20,25 @@ export async function fetchDataverseDataSingle(
       requiredAttributeValue
     );
 
-    // Process the retrieved data
-    const value: string = response[requestedAttrName];
-    return value ?? "[]";
+    let value: string | undefined;
 
-    // Process the retrieved data as needed
+    // Loop over all properties in the response object
+    for (const propertyName in response) {
+      if (propertyName.includes(requestedAttrName)) {
+        // Found a property that includes "datestoskip"
+        value = response[propertyName];
+        break; // Exit the loop since we found what we need
+      }
+    }
+
+    if (value !== undefined) {
+      return value;
+    } else {
+      console.error(
+        "No property containing 'datestoskip' found in the response."
+      );
+      return "[]"; // or handle this case accordingly
+    }
   } catch (error) {
     console.error("Fetch error:", error);
   }

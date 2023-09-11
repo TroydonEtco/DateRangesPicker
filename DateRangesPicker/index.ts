@@ -16,13 +16,13 @@ export class DateRangesPicker
   public props: IDateRangePickerProps = {
     targetDocument: undefined,
     dateRangesChanged: this.selectedDateRangesChanged.bind(this),
-    requestData: this.retrieveDummyDateRanges.bind(this), // UNCOMMENT when using test data
-    // requestData: this.retrieveDataverseData.bind(this),
+    // requestData: this.retrieveDummyDateRanges.bind(this), // UNCOMMENT when using test data
+    requestData: this.retrieveDataverseData.bind(this),
   };
 
   private static _entityName = "new_eventseries";
   private static _requiredAttributeName = "new_eventseriesid";
-  private static _dateRangesAttributeName = "new_datestoskip";
+  private static _dateRangesAttributeName = "datestoskip";
 
   /**
    * Empty constructor.
